@@ -1,0 +1,10 @@
+{
+  "aoc-version": 2022,
+
+  "CoreSettings": {
+    "SolverNamespace": "advent_of_code_2022.days",
+    "ProjectName": "advent-of-code.2022",
+    "AccentColor": "Green",
+    "LogoPath": "aoc-logo.txt"
+  }
+}

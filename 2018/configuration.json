@@ -1,0 +1,10 @@
+{
+  "aoc-version": 2018,
+
+  "CoreSettings": {
+    "SolverNamespace": "advent_of_code_2018.days",
+    "ProjectName": "advent-of-code.2018",
+    "AccentColor": "Red",
+    "LogoPath": "aoc-logo.txt"
+  }
+}
