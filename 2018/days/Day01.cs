@@ -8,22 +8,18 @@ namespace advent_of_code_2018.days
     public class Day01 : SolverBase
     {
         public override object PartOne(string[] data)
-        {
-            return ParseData(data).Sum();
-        }
+            => ParseChangeList(data).Sum();
 
         public override object PartTwo(string[] data)
         {
             int currentFrequency = 0;
-            HashSet<int> frequencies = new()
-            {
-                currentFrequency
-            };
+            HashSet<int> frequencies = new() { currentFrequency };
             while (true)
             {
-                foreach (var change in ParseData(data))
+                var changes = ParseChangeList(data);
+                while(changes.Count > 0)
                 {
-                    currentFrequency += change;
+                    currentFrequency += changes.Dequeue();
 
                     if (frequencies.Contains(currentFrequency))
                         return currentFrequency;
@@ -31,7 +27,8 @@ namespace advent_of_code_2018.days
                 }
             }
         }
-        private IEnumerable<int> ParseData(string[] indata)
-           => indata.Select(x => x[0] == '+' ? x[1..].ToInt() : x[1..].ToInt() * -1);
+
+        private Queue<int> ParseChangeList(string[] indata)
+           => new(indata.Select(x => x[0] == '+' ? x[1..].ToInt() : x[1..].ToInt() * -1));
     }
 }
