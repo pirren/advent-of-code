@@ -9,16 +9,15 @@ namespace advent_of_code_2021.days
     {
         public override object PartOne(string[] data)
         {
-            var boards = ParseBoards(data);
-            var draws = new Queue<int>(data[0].Split(',').Select(int.Parse).ToList());
+            var (draws, boards) = ParseData(data);
+            //var draws = new Queue<int>(data[0].Split(',').Select(int.Parse).ToList());
             var gameresults = GetBingoResult(boards, draws, stop: true);
             return gameresults[0].score;
         }
 
         public override object PartTwo(string[] data)
         {
-            var boards = ParseBoards(data);
-            var draws = new Queue<int>(data[0].Split(',').Select(int.Parse).ToList());
+            var (draws, boards) = ParseData(data);
             var gameresults = GetBingoResult(boards, draws);
             return gameresults.OrderByDescending(x => x.totalDraws).First().score;
         }
@@ -73,17 +72,23 @@ namespace advent_of_code_2021.days
                 if (!Rows.Any(r => r.Values.Contains(number)))
                     return;
 
-                foreach (var row in Rows.Where(x => x.Values.Any(v => v.Equals(number))).Select(x => x.Values))
+                foreach (var row in Rows.Where(x => x.Values.Contains(number)).Select(x => x.Values))
+                {
                     for (int i = 0; i < row.Count; i++)
-                        if (row[i] == number)
-                            row[i] = -1;
+                    {
+                        if (row[i] != number) 
+                            continue;
+                        row[i] = -1;
+                    }
+                }
             }
 
             public class Row { public List<int> Values { get; set; } = new(); }
         }
 
-        public List<Board> ParseBoards(string[] indata)
+        public (Queue<int> draws, List<Board> boards) ParseData(string[] indata)
         {
+            var draws = new Queue<int>(indata[0].Split(',').Select(int.Parse).ToList());
             var lb = new List<Board>();
 
             for (var b = 2; b < indata.Length; b += 6)
@@ -99,7 +104,7 @@ namespace advent_of_code_2021.days
                 lb.Add(board);
             }
 
-            return lb;
+            return (draws, lb);
         }
     }
 }
