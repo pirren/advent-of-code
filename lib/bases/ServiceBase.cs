@@ -7,7 +7,6 @@ namespace advent_of_code_lib.bases
 {
     public abstract class ServiceBase : IHostedService
     {
-        protected AutoResetEvent AutoResetEvent => new(false);
         protected IServiceScopeFactory ScopeFactory { get; }
         protected IConfigurationFactory ConfigurationFactory { get; }
 

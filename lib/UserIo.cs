@@ -1,17 +1,21 @@
-﻿namespace advent_of_code_lib
+﻿using advent_of_code.lib.helpers;
+using advent_of_code_lib.interfaces;
+
+namespace advent_of_code_lib
 {
     /// <summary>
     /// Handles all user in and out feed
     /// </summary>
     public class UserIo
     {
-        public UserIo(PrintUtils printUtils)
+        public UserIo(PrintUtils printUtils, IConfigurationFactory configFactory)
         {
             PrintUtils = printUtils;
+            ConfigFactory = configFactory;
         }
 
         protected PrintUtils PrintUtils { get; }
-
+        protected IConfigurationFactory ConfigFactory { get; }
         protected int CursorTop { get; } = 11;
 
         private void ClearWindow()
@@ -38,33 +42,35 @@
 
                 for (int i = 0; i < menuOptions.Length; i++)
                 {
-                    var selected = i == activechoice;
-
-                    if (selected)
+                    using (ColorScope.CreateScope(ConfigFactory))
                     {
-                        Console.ForegroundColor = PrintUtils.AccentColor;
-                        Console.Write(" > ");
-                    }
-                    else
-                        Console.Write("   ");
+                        Console.Write(i == activechoice ? " > " : "   ");
+                    };
 
-                    Console.ForegroundColor = ConsoleColor.Gray;
                     Console.Write($" {menuOptions.GetValue(i)?.ToString()}\r\n");
                 }
 
                 var action = Console.ReadKey();
 
                 if (stoppingToken.IsCancellationRequested)
+                {
                     Environment.Exit(0);
-                if (action.Key == ConsoleKey.DownArrow && activechoice < menuOptions.Length - 1)
-                    activechoice++;
-                else if (action.Key == ConsoleKey.UpArrow && activechoice > 0)
-                    activechoice--;
-                else if (action.Key == ConsoleKey.Enter)
+                }
+
+                if (action.Key == ConsoleKey.Enter)
                 {
                     Console.CursorVisible = true;
                     ClearWindow();
                     return (T?)menuOptions.GetValue(activechoice);
+                }
+
+                if (action.Key == ConsoleKey.DownArrow && activechoice < menuOptions.Length - 1)
+                {
+                    activechoice++;
+                }
+                else if (action.Key == ConsoleKey.UpArrow && activechoice > 0)
+                {
+                    activechoice--;
                 }
             }
             Console.CursorVisible = true;
@@ -73,7 +79,7 @@
             return null;
         }
 
-        public T Prompt<T>(string prompt, CancellationToken stoppingToken)
+        public T? Prompt<T>(string prompt, CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -88,6 +94,7 @@
                 catch
                 {
                     ClearWindow();
+
                     if (stoppingToken.IsCancellationRequested)
                         Environment.Exit(0);
 
@@ -95,7 +102,7 @@
                     continue;
                 }
             }
-            return default(T);
+            return default;
         }
 
         public string Prompt(string prompt)

@@ -7,8 +7,8 @@ namespace advent_of_code_2021.days
     [ProblemInfo(14, "Extended Polymerization")]
     public class Day14 : SolverBase
     {
-        protected char polymerStart { get; set; } = '\0';
-        protected char polymerEnd { get; set; } = '\0';
+        protected char PolymerStart { get; set; } = '\0';
+        protected char PolymerEnd { get; set; } = '\0';
 
         protected Dictionary<string, List<string>> InsertionRules { get; set; } = new();
         protected Dictionary<string, long> Polymer { get; set; } = new();
@@ -37,8 +37,8 @@ namespace advent_of_code_2021.days
                 elementCount[poly[0]] += amount;
                 elementCount[poly[1]] += amount;
             }
-            elementCount[polymerStart]++;
-            elementCount[polymerEnd]++;
+            elementCount[PolymerStart]++;
+            elementCount[PolymerEnd]++;
 
             var abs = elementCount.Max(s => s.Value) - elementCount.Min(s => s.Value);
 
@@ -78,8 +78,8 @@ namespace advent_of_code_2021.days
                 Polymer[new string(new[] { template[idx], template[idx + 1] })] += 1L;
             });
 
-            polymerStart = template.First();
-            polymerEnd = template.Last();
+            PolymerStart = template.First();
+            PolymerEnd = template.Last();
         }
     }
 }

@@ -145,7 +145,7 @@ namespace advent_of_code_2018.days
                 dict.TryAdd(key, value);
         }
 
-        private static string pattern = @"\[(.*?)\]";
+        private static readonly string pattern = @"\[(.*?)\]";
         public static (DateTime timestamp, int id, Day04.LogType type) GetLogInfo(this string data)
         {
             var timestamp = Convert.ToDateTime(Regex.Matches(data, pattern).Single().Groups[1].Value);

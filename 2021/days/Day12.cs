@@ -7,11 +7,11 @@ namespace advent_of_code_2021.days
     [ProblemInfo(12, "Passage Pathing")]
     public class Day12 : SolverBase
     {
-        protected Dictionary<string, Node> nodeTree { get; set; } = new();
+        protected Dictionary<string, Node> NodeTree { get; set; } = new();
         public override object PartOne(string[] data)
         {
             ParseInput(data);
-            Node startnode = nodeTree["start"];
+            Node startnode = NodeTree["start"];
 
             return CalculatePath(new(new[] { startnode })).Count;
         }
@@ -19,7 +19,7 @@ namespace advent_of_code_2021.days
         public override object PartTwo(string[] data)
         {
             ParseInput(data);
-            Node startnode = nodeTree["start"];
+            Node startnode = NodeTree["start"];
 
             return CalculatePath(new(new[] { startnode }), true).Count;
         }
@@ -41,13 +41,13 @@ namespace advent_of_code_2021.days
 
         private List<Node> ValidNextNodes(List<Node> currentPath, Node node)
             => node.Links
-                    .Select(x => nodeTree[x])
+                    .Select(x => NodeTree[x])
                     .Where(s => !s.IsStart && (!currentPath.Contains(s) || s.IsBig))
                     .ToList();
 
         private List<Node> ValidNextNodesRevisit(List<Node> currentPath, Node node)
             => node.Links
-                    .Select(s => nodeTree[s])
+                    .Select(s => NodeTree[s])
                     .Where(node => !node.IsStart)
                     .Where(node => node.IsBig || !currentPath.Contains(node) ||
                                    currentPath.Where(node => node.IsSmall).Count() == currentPath.Where(node => node.IsSmall).Distinct().Count())
@@ -57,15 +57,15 @@ namespace advent_of_code_2021.days
         {
             var nodes = indata.SelectMany(row => row.Split('-')).Distinct().Select(id => new Node(id)).ToArray();
 
-            nodeTree = nodes.ToDictionary(key => key.Id);
+            NodeTree = nodes.ToDictionary(key => key.Id);
 
             indata.ForEach(row =>
             {
                 var valOne = row.Split('-')[0];
                 var valTwo = row.Split('-')[1];
 
-                nodeTree[valOne].Links.Add(valTwo);
-                nodeTree[valTwo].Links.Add(valOne);
+                NodeTree[valOne].Links.Add(valTwo);
+                NodeTree[valTwo].Links.Add(valOne);
             });
         }
 
