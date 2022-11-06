@@ -33,7 +33,7 @@ namespace advent_of_code_2018.days
             return 0;
         }
 
-        private IEnumerable<(int count, string boxId)> GetBoxInformation(string[] indata)
+        private List<(int count, string boxId)> GetBoxInformation(string[] indata)
         {
             return indata.SelectMany(
                     (str, internalId) =>
@@ -41,7 +41,7 @@ namespace advent_of_code_2018.days
                         .Where(x => new[] { 2, 3 }.Contains(x.Count()))
                         .Select(x => new { Count = x.Count(), BoxId = indata[internalId] })
                     ).DistinctBy(x => new { x.BoxId, x.Count })
-                    .Select(x => (x.Count, x.BoxId));
+                    .Select(x => (x.Count, x.BoxId)).ToList();
         }
     }
 }

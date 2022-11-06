@@ -40,7 +40,7 @@ namespace advent_of_code_2018.days
 
         private int MostFrequentSleepingMinute(List<(DateTime fallAsleep, DateTime wakeUp)> windows)
             => windows.SelectMany(x => Enumerable.Range(x.fallAsleep.Minute, x.wakeUp.Minute - x.fallAsleep.Minute))
-                .GroupBy(x => x).OrderByDescending(x => x.Count()).Select(x => x.Count()).First();
+                .GroupBy(x => x).Select(x => x.Count()).OrderByDescending(x => x).First();
 
         private int MostAsleepAt(List<(DateTime fallAsleep, DateTime wakeUp)> windows)
             => windows.SelectMany(x => Enumerable.Range(x.fallAsleep.Minute, x.wakeUp.Minute - x.fallAsleep.Minute))
