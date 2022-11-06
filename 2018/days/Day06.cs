@@ -32,9 +32,8 @@ namespace advent_of_code_2018.days
         private Dictionary<(int, int), int> GetPointAreas(List<(int x, int y)> points, BoundingGrid grid)
         {
             Dictionary<(int, int), int> pointAreas = new();
-            foreach (var point in points.RemoveInfinitePoints(grid))
+            foreach (var point in points.SkipInfinites(grid))
             {
-                // all non infinite points
                 pointAreas.Add(point, 0);
                 var otherPoints = points.Where(x => x != point);
                 for (int x = grid.MinX + 1; x < grid.MaxX; x++)
@@ -81,7 +80,7 @@ namespace advent_of_code_2018.days
             return size;
         }
 
-        public static List<(int x, int y)> RemoveInfinitePoints(this List<(int x, int y)> points, Day06.BoundingGrid grid)
+        public static List<(int x, int y)> SkipInfinites(this List<(int x, int y)> points, Day06.BoundingGrid grid)
         {
             List<(int x, int y)> result = new(points);
             foreach (var point in points)

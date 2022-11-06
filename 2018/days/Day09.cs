@@ -15,7 +15,7 @@ namespace advent_of_code_2018.days
 
         public override object PartTwo(string[] data)
         {
-            // Part 2: What is the value of the root node?
+            // Part 2: What would the new winning Elf's score be if the number of the last marble were 100 times larger?
             var (players, lastMarble) = ParseData(data[0]);
             return GetWinningScore(players, lastMarble * 100);
         }
@@ -54,7 +54,7 @@ namespace advent_of_code_2018.days
         {
             protected HashSet<MarbleNode> Marbles { get; }
             protected Dictionary<int, long> Players { get; } = new();
-            protected MarbleNode CurrentNode { get; private set; }
+            protected MarbleNode CurrentNode { get; private set; } // tracking CurrentNode as node obj instead of int was key to performance
             public long Winningscore => Players.Max(x => x.Value);
 
             public LinkedMarbleGame(int players)
@@ -86,7 +86,7 @@ namespace advent_of_code_2018.days
 
             private void Place(MarbleNode node)
             {
-                CurrentNode = node;
+                CurrentNode = node; // tracking CurrentNode as node obj instead of int was key to performance
                 Marbles.Add(node);
             }
 

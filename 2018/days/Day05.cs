@@ -7,7 +7,6 @@ namespace advent_of_code_2018.days
     [ProblemInfo(5, "Alchemical Reduction")]
     public class Day05 : SolverBase
     {
-
         public override object PartOne(string[] data)
         {
             // Part 1: How many units remain after fully reacting the polymer you scanned?
