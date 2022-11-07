@@ -120,5 +120,18 @@ namespace advent_of_code_lib.extensions
         {
             return Enumerable.Range(0, end);
         }
+
+        /// <summary>
+        /// Number at position n
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public static int NumberAt(this int value, int n)
+        {
+            var result = value / (int)Math.Pow(10, n);
+            result %= 10;
+            return result;
+        }
     }
 }

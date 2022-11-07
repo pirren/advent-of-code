@@ -1,7 +1,5 @@
 ﻿using advent_of_code_lib.attributes;
 using advent_of_code_lib.bases;
-using advent_of_code_lib.extensions;
-using Serilog;
 
 namespace advent_of_code_2018.days
 {
@@ -18,7 +16,7 @@ namespace advent_of_code_2018.days
 
         public override object PartTwo(string[] data)
         {
-            // Exactly how many seconds would they have needed to wait for that message to appear?
+            // Part 2: Exactly how many seconds would they have needed to wait for that message to appear?
             var pList = GetPoints(data);
             return PrintMap(pList);
         }
