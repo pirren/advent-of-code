@@ -17,20 +17,21 @@ namespace advent_of_code_2018.days
                 SideLength = GraphSize
             };
 
-            var (x, y, _) = map.HighestFuel(3);
+            var (x, y, _) = map.FuelWindow(3);
             return $"({x},{y})";
         }
 
         public override object PartTwo(string[] data)
         {
             // Part 2: What is the X,Y,size identifier of the square with the largest total power?
+            // That's not the right answer. You guessed 237,280,9.
             var map = new Graph
             {
                 SerialNo = data[0].ToInt(),
                 SideLength = GraphSize,
             };
 
-            var (x, y, size) = map.HighestFuel(300);
+            var (x, y, size) = map.FuelWindow(300);
             return $"({x},{y},{size})";
         }
 
@@ -58,7 +59,7 @@ namespace advent_of_code_2018.days
                 }
             }
 
-            public (int x, int y, int size) HighestFuel(int maxsize)
+            public (int x, int y, int size) FuelWindow(int maxsize)
             {
                 // serialnumber 18, the largest total 3x3 top-left corner of 33,45 - total power of 29
 
@@ -72,9 +73,9 @@ namespace advent_of_code_2018.days
 
                 for (int s = 2; s < maxsize + 2; s++)
                 {
-                    for (int y = s; y <= SideLength - s; y++)
+                    for (int y = s; y < SideLength + 2; y++)
                     {
-                        for (int x = s; x <= SideLength - s; x++)
+                        for (int x = s; x < SideLength + 2; x++)
                         {
                             int newsum = 0;
 
