@@ -59,7 +59,7 @@ namespace advent_of_code_2021.days
                 if (Rows.Any(x => x.Values.All(v => v == -1)))
                     return true;
 
-                if (5.Range().Any(x => Rows.All(f => f.Values[x] == -1)))
+                if (0.Range(5).Any(x => Rows.All(f => f.Values[x] == -1)))
                     return true;
 
                 return false;

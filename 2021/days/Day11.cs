@@ -15,7 +15,7 @@ namespace advent_of_code_2021.days
             var octopus = ModelOctopuses(data, rows, cols).ToList();
             octopus = Link(octopus, rows, cols);
 
-            100.Range().ForEach(day =>
+            0.Range(100).ForEach(day =>
             {
                 octopus.ForEach(oct => oct.Increase(day));
             });

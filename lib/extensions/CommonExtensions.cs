@@ -116,9 +116,9 @@ namespace advent_of_code_lib.extensions
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public static IEnumerable<int> Range(this int end)
+        public static IEnumerable<int> Range(this int start, int end)
         {
-            return Enumerable.Range(0, end);
+            return Enumerable.Range(start, end);
         }
 
         /// <summary>

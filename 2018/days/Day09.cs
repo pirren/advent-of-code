@@ -10,38 +10,22 @@ namespace advent_of_code_2018.days
         {
             // Part 1: What is the winning Elf's score?
             var (players, lastMarble) = ParseData(data[0]);
-            return GetWinningScore(players, lastMarble);
+            var marbleGame = new MarbleGame
+            {
+                Target = lastMarble
+            };
+            return marbleGame.Play(players); //GetWinningScore(players, lastMarble);
         }
 
         public override object PartTwo(string[] data)
         {
             // Part 2: What would the new winning Elf's score be if the number of the last marble were 100 times larger?
             var (players, lastMarble) = ParseData(data[0]);
-            return GetWinningScore(players, lastMarble * 100);
-        }
-
-        private long GetWinningScore(int players, int lastMarble)
-        {
-            int currentPlayer = 0;
-            int currentMarble = 1;
-
-            LinkedMarbleGame marbleGame = new(players);
-
-            while (true)
+            var marbleGame = new MarbleGame
             {
-                marbleGame.Place(new MarbleNode() { Value = currentMarble }, currentPlayer);
-
-                currentMarble++;
-
-                if (currentMarble == lastMarble)
-                    break;
-
-                currentPlayer = currentPlayer + 1 == players
-                    ? 0 : currentPlayer + 1;
-            }
-
-
-            return marbleGame.Winningscore;
+                Target = lastMarble * 100
+            };
+            return marbleGame.Play(players); //GetWinningScore(players, lastMarble);
         }
 
         private (int players, int lastMarble) ParseData(string data)
@@ -50,19 +34,40 @@ namespace advent_of_code_2018.days
             return new(parts[0], parts[1]);
         }
 
-        internal class LinkedMarbleGame
+        internal class MarbleGame
         {
-            protected HashSet<MarbleNode> Marbles { get; }
-            protected Dictionary<int, long> Players { get; } = new();
-            protected MarbleNode CurrentNode { get; private set; } // tracking CurrentNode as node obj instead of int was key to performance
+            public HashSet<MarbleNode> Marbles { get; set; }
+            public Dictionary<int, long> Players { get; } = new();
+            public int Target { get; set; }
+            public MarbleNode CurrentNode { get; set; } // tracking CurrentNode as node obj instead of int was key to performance
             public long Winningscore => Players.Max(x => x.Value);
 
-            public LinkedMarbleGame(int players)
+            public long Play(int players)
             {
-                CurrentNode = new MarbleNode { Value = 0 };
-                Marbles = new HashSet<MarbleNode> { CurrentNode };
                 for (int i = 0; i < players; i++)
                     Players.Add(i, 0);
+
+                int currentPlayer = 0;
+                int currentMarble = 1;
+
+                CurrentNode = new MarbleNode { Value = 0 };
+                Marbles = new HashSet<MarbleNode>() { CurrentNode };
+
+                while (true)
+                {
+                    Place(new MarbleNode() { Value = currentMarble }, currentPlayer);
+
+                    currentMarble++;
+
+                    if (currentMarble == Target)
+                        break;
+
+                    currentPlayer = currentPlayer + 1 == players
+                        ? 0 : currentPlayer + 1;
+                }
+
+
+                return Players.Max(x => x.Value);
             }
 
             public void Place(MarbleNode node, int player)
