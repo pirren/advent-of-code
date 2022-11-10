@@ -24,7 +24,6 @@ namespace advent_of_code_2018.days
         public override object PartTwo(string[] data)
         {
             // Part 2: What is the X,Y,size identifier of the square with the largest total power?
-            // That's not the right answer. You guessed 237,280,9.
             var map = new Graph
             {
                 SerialNo = data[0].ToInt(),
@@ -47,27 +46,11 @@ namespace advent_of_code_2018.days
                 return (((rackId * y) + serialno) * rackId).NumberAt(2) - 5;
             }
 
-            void Print()
-            {
-                for (int y = 0; y < SideLength; y++)
-                {
-                    for (int x = 0; x < SideLength; x++)
-                    {
-                        Console.Write(PowerMap[(x, y)].ToString().PadLeft(4));
-                    }
-                    Console.Write("\r\n");
-                }
-            }
-
             public (int x, int y, int size) FuelWindow(int maxsize)
             {
-                // serialnumber 18, the largest total 3x3 top-left corner of 33,45 - total power of 29
-
                 for (int y = 0; y < SideLength; y++)
                     for (int x = 0; x < SideLength; x++)
                         PowerMap.Add((x, y), Power(SerialNo, x, y));
-
-                //Print();
 
                 var areas = new Dictionary<(int x, int y, int size), int>();
 
