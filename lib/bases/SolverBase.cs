@@ -48,12 +48,21 @@ namespace advent_of_code_lib.bases
         {
             PrintSolutionHeader();
 
+            if (this.IsSlow())
+            {
+                using(ColorScope.CreateScope(ConsoleColor.DarkRed))
+                {
+                    Console.WriteLine($"Skipping Day {this.GetProblemInfo().Day}, solution marked as slow.");
+                }
+                return;
+            }
+
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             PrintSolutionPart(PartOne(GetIndata(folder)), stopWatch.ElapsedMilliseconds, 1);
 
             stopWatch.Restart();
-            PrintSolutionPart(PartTwo(GetIndata(folder)), stopWatch.ElapsedMilliseconds, 1);
+            PrintSolutionPart(PartTwo(GetIndata(folder)), stopWatch.ElapsedMilliseconds, 2);
             stopWatch.Stop();
         }
 

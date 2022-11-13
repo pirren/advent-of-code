@@ -41,11 +41,11 @@ namespace advent_of_code_2018.days
         {
             Console.Write("\r\n");
             var time = FindSeconds(points);
-            for (int y = points.GetMinY(time); y <= points.GetMaxY(time); y++)
+            for (int y = points.Min(v => v.pY + v.vY * time); y <= points.Max(v => v.pY + v.vY * time); y++)
             {
                 for (int x = points.GetMinX(time); x <= points.GetMaxX(time); x++)
                 {
-                    if (points.PointAtPosition(x, y, time)) Console.Write("*");
+                    if (points.ActiveAtTime(x, y, time)) Console.Write("*");
                     else Console.Write(" ");
                 }
                 Console.Write("\r\n");
@@ -60,16 +60,9 @@ namespace advent_of_code_2018.days
 
     public static class Ext10
     {
-        public static bool PointAtPosition(this List<(int pX, int pY, int vX, int vY)> points, int x, int y, int time)
-        {
-            var result = points.Any(p => p.pX + (p.vX * time) == x && p.pY + (p.vY * time) == y);
-            return result;
-        }
+        public static bool ActiveAtTime(this List<(int pX, int pY, int vX, int vY)> points, int x, int y, int time)
+            => points.Any(p => p.pX + (p.vX * time) == x && p.pY + (p.vY * time) == y);
 
-        public static int GetMaxY(this List<(int pX, int pY, int vX, int vY)> points, int time)
-            => points.Max(v => v.pY + v.vY * time);
-        public static int GetMinY(this List<(int pX, int pY, int vX, int vY)> points, int time)
-            => points.Min(v => v.pY + v.vY * time);
         public static int GetMaxX(this List<(int pX, int pY, int vX, int vY)> points, int time) 
             => points.Max(v => v.pX + v.vX * time);
         public static int GetMinX(this List<(int pX, int pY, int vX, int vY)> points, int time)

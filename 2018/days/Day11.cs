@@ -4,6 +4,7 @@ using advent_of_code_lib.extensions;
 
 namespace advent_of_code_2018.days
 {
+    [Slow]
     [ProblemInfo(11, "Chronal Charge")]
     public class Day11 : SolverBase
     {
@@ -17,8 +18,7 @@ namespace advent_of_code_2018.days
                 SideLength = GraphSize
             };
 
-            var (x, y, _) = map.FuelWindow(3);
-            return $"({x},{y})";
+            return map.FuelWindow(3);
         }
 
         public override object PartTwo(string[] data)
@@ -30,8 +30,7 @@ namespace advent_of_code_2018.days
                 SideLength = GraphSize,
             };
 
-            var (x, y, size) = map.FuelWindow(300);
-            return $"({x},{y},{size})";
+            return map.FuelWindow(300);
         }
 
         internal class Graph
@@ -46,7 +45,7 @@ namespace advent_of_code_2018.days
                 return (((rackId * y) + serialno) * rackId).NumberAt(2) - 5;
             }
 
-            public (int x, int y, int size) FuelWindow(int maxsize)
+            public string FuelWindow(int maxsize)
             {
                 for (int y = 0; y < SideLength; y++)
                     for (int x = 0; x < SideLength; x++)
@@ -54,6 +53,8 @@ namespace advent_of_code_2018.days
 
                 var areas = new Dictionary<(int x, int y, int size), int>();
 
+                int most = 0;
+                string bestwindow = "";
                 for (int s = 2; s < maxsize + 2; s++)
                 {
                     for (int y = s; y < SideLength + 2; y++)
@@ -72,11 +73,16 @@ namespace advent_of_code_2018.days
 
                             }
                             areas[(x - s, y - s, s - 1)] = PowerMap[(x - 2,y - 2)] + iarea + newsum;
+                            if(areas[(x - s, y - s, s - 1)] > most)
+                            {
+                                most = areas[(x - s, y - s, s - 1)];
+                                bestwindow = maxsize == 3 ? $"{x - s},{y}" : $"{x - s},{y - s},{s - 1}";
+                            }
                         }
                     }
                 }
 
-                return areas.OrderByDescending(x => x.Value).First().Key;
+                return bestwindow;
             }
         }
     }

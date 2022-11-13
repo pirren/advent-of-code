@@ -1,6 +1,5 @@
 ﻿using advent_of_code_lib.attributes;
 using advent_of_code_lib.bases;
-using System.Text;
 
 namespace advent_of_code_2018.days
 {
@@ -11,7 +10,8 @@ namespace advent_of_code_2018.days
         {
             // Part 1: After 20 generations, what is the sum of the numbers of all pots which contain a plant?
             var state = new LinkedList<char>(data[0].Select(ch => ch));
-            var rules = GetRules(data.Skip(2).ToArray());
+            var rules = GetRules(data);
+
             var graph = new Graph()
             {
                 State = state,
@@ -24,9 +24,9 @@ namespace advent_of_code_2018.days
         public override object PartTwo(string[] data)
         {
             // Part 2: After fifty billion (50000000000) generations, what is the sum of the numbers of all pots which contain a plant?
-            // 3150000000905
             var state = new LinkedList<char>(data[0].Select(ch => ch));
-            var rules = GetRules(data.Skip(2).ToArray());
+            var rules = GetRules(data);
+
             var graph = new Graph()
             {
                 State = state,
@@ -35,6 +35,11 @@ namespace advent_of_code_2018.days
             };
             return graph.Grow();
         }
+
+        Dictionary<string, char> GetRules(string[] data)
+            => data.Skip(2)
+                .Select(line => line.Split())
+                .ToDictionary(x => x[0], v => v[1][0]);
 
         internal class Graph
         {
@@ -111,20 +116,14 @@ namespace advent_of_code_2018.days
                     pot = pot.Next;
                 }
 
+                if (RightPot() == Plant) newstate.AddLast(Plant); // add right plant if any
+                
                 CurrentIteration++;
                 RemainingIterations--;
-
-                if (RightPot() == Plant) newstate.AddLast(Plant); // add right plant if any
-
                 State = newstate;
 
                 return Grow();
             }
         }
-
-        Dictionary<string, char> GetRules(string[] data)
-            => data
-                .Select(line => line.Split())
-                .ToDictionary(x => x[0], v => v[1][0]);
     }
 }

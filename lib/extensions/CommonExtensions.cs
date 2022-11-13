@@ -7,17 +7,28 @@ namespace advent_of_code_lib.extensions
 {
     public static class CommonExtensions
     {
-        public static ProblemInfo GetProblemInfo(this SolverBase solver)
+        public static ProblemInfoAttribute GetProblemInfo(this SolverBase solver)
         {
-            var attr = solver.GetType().GetCustomAttribute(typeof(ProblemInfo));
+            var attr = solver.GetType().GetCustomAttribute(typeof(ProblemInfoAttribute));
 
-            if (attr == null || attr is not ProblemInfo)
+            if (attr == null || attr is not ProblemInfoAttribute)
             {
                 Log.Error($"Solver {solver.GetType().Name} has no ProblemInfo Attribute set.");
                 throw new Exception($"Solver {solver.GetType().Name} has no ProblemInfoAttribute set.");
             }
 
-            return (ProblemInfo)attr;
+            return (ProblemInfoAttribute)attr;
+        }
+
+        /// <summary>
+        /// Solver is slow
+        /// </summary>
+        /// <param name="solver"></param>
+        /// <returns></returns>
+        public static bool IsSlow(this SolverBase solver)
+        {
+            var attr = solver.GetType().GetCustomAttribute(typeof(SlowAttribute));
+            return attr != null && attr is SlowAttribute;
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using advent_of_code_lib.bases;
 using advent_of_code_lib.configuration;
+using advent_of_code_lib.extensions;
 using advent_of_code_lib.interfaces;
 using Microsoft.Extensions.DependencyInjection;
 

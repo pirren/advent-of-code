@@ -46,6 +46,6 @@ namespace advent_of_code_lib
                 .NotNull()
                 .ToList();
 
-        public record Solution(SolverBase Solver, ProblemInfo Info) { }
+        public record Solution(SolverBase Solver, ProblemInfoAttribute Info) { }
     }
 }
