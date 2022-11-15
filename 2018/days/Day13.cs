@@ -73,11 +73,9 @@ namespace advent_of_code_2018.days
 
                         if (!Carts.Any(c => c.Alive && c.X == pos.x && c.Y == pos.y && c != cart)) continue;
 
-                        cart.Alive = false;
-                        foreach (var c2 in Carts.Where(c => (c.X, c.Y) == pos && c.Alive)) c2.Alive = false;
+                        foreach (var deadcart in Carts.Where(c => (c.X, c.Y) == pos && c.Alive)) deadcart.Alive = false;
 
                         if (!lookforlast && Carts.Any(x => !x.Alive)) return new(pos.x, pos.y);
-
                     }
                 }
                 return Carts.Where(x => x.Alive).Select(cart => (cart.X, cart.Y)).Single();
