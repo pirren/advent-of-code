@@ -14,9 +14,7 @@ namespace advent_of_code_2018.days
             var map = new Map
             {
                 Positions = positions,
-                Carts = carts,
-                MapSizeX = data[0].Length,
-                MapSizeY = data.GetLength(0)
+                Carts = carts
             };
             return map.SimulateCollision();
         }
@@ -28,9 +26,7 @@ namespace advent_of_code_2018.days
             var map = new Map
             {
                 Positions = positions,
-                Carts = carts,
-                MapSizeX = data[0].Length,
-                MapSizeY = data.GetLength(0)
+                Carts = carts
             };
             return map.SimulateCollision(lookforlast: true);
         }
@@ -59,19 +55,12 @@ namespace advent_of_code_2018.days
         {
             public char[,] Positions { get; set; }
             public List<Cart> Carts { get; set; }
-            public int MapSizeX { get; set; }
-            public int MapSizeY { get; set; }
-
-            public void SortCarts()
-            {
-                Carts = Carts.OrderBy(c => c.Y).ThenBy(c => c.X).ToList();
-            }
 
             public (int x, int y) SimulateCollision(bool lookforlast = false)
             {
-                SortCarts();   
                 while (Carts.Count(x => x.Alive) > 1)
                 {
+                    Carts = Carts.OrderBy(c => c.Y).ThenBy(c => c.X).ToList();
                     foreach (var cart in Carts)
                     {
                         if (!cart.Alive) continue;
@@ -80,9 +69,7 @@ namespace advent_of_code_2018.days
                         if (Positions[pos.y, pos.x] == '+') cart.TurnAtIntersection();
                         else if (Positions[pos.y, pos.x].IsCurve()) cart.Turn(Positions[pos.y, pos.x]);
 
-
-                        cart.X = pos.x;
-                        cart.Y = pos.y;
+                        cart.X = pos.x; cart.Y = pos.y; // move cart then check for crash
 
                         if (!Carts.Any(c => c.Alive && c.X == pos.x && c.Y == pos.y && c != cart)) continue;
 
@@ -92,7 +79,6 @@ namespace advent_of_code_2018.days
                         if (!lookforlast && Carts.Any(x => !x.Alive)) return new(pos.x, pos.y);
 
                     }
-                    SortCarts();
                 }
                 return Carts.Where(x => x.Alive).Select(cart => (cart.X, cart.Y)).Single();
             }
@@ -100,11 +86,11 @@ namespace advent_of_code_2018.days
 
         public class Cart
         {
-            public Dictionary<TurnFor, TurnFor> TurnMap = new()
+            public Dictionary<IntersectionRules, IntersectionRules> TurnMap = new()
             {
-                { TurnFor.Left, TurnFor.Straight },
-                { TurnFor.Straight, TurnFor.Right },
-                { TurnFor.Right, TurnFor.Left }
+                { IntersectionRules.Left, IntersectionRules.Straight },
+                { IntersectionRules.Straight, IntersectionRules.Right },
+                { IntersectionRules.Right, IntersectionRules.Left }
             };
 
             public bool Alive { get; set; } = true;
@@ -113,8 +99,8 @@ namespace advent_of_code_2018.days
             public int Dx { get; set; }
             public int Dy { get; set; }
 
-            private TurnFor nextTurn = TurnFor.Left;
-            public TurnFor NextTurn()
+            private IntersectionRules nextTurn = IntersectionRules.Left;
+            public IntersectionRules NextTurn()
             {
                 var turn = nextTurn;
                 nextTurn = TurnMap[nextTurn];
@@ -134,8 +120,8 @@ namespace advent_of_code_2018.days
                 }
 
                 var direction = NextTurn();
-                if (direction == TurnFor.Left) T(1);
-                else if (direction == TurnFor.Right) T(-1);
+                if (direction == IntersectionRules.Left) T(1);
+                else if (direction == IntersectionRules.Right) T(-1);
             }
 
             public void Turn(char turn)
@@ -153,7 +139,7 @@ namespace advent_of_code_2018.days
             }
         }
 
-        public enum TurnFor
+        public enum IntersectionRules
         {
             Left,
             Straight,
@@ -163,22 +149,15 @@ namespace advent_of_code_2018.days
 
     internal static class Ext13
     {
-        public static char[] CartTypes { get; } = new char[] { '>', 'v', '<', '^' };
-        public static char[] AllTracks { get; } = new char[] { '|', '-', '+', '/', '\\' };
-        public static char[] CurveTracks { get; } = new char[] { '/', '\\' };
-
-        public static bool IsCurve(this char ch) => CurveTracks.Contains(ch);
+        public static bool IsCurve(this char ch) => new [] { '/', '\\'}.Contains(ch);
         public static Cart? GetCart(this char ch, int x, int y)
-        {
-            if (!CartTypes.Contains(ch)) return null;
-            return ch switch
+            => ch switch
             {
                 '>' => new Cart { Dx = 1, Dy = 0, X = x, Y = y },
                 'v' => new Cart { Dx = 0, Dy = 1, X = x, Y = y },
                 '<' => new Cart { Dx = -1, Dy = 0, X = x, Y = y },
                 '^' => new Cart { Dx = 0, Dy = -1, X = x, Y = y },
-                _ => throw new NotImplementedException()
+                _ => null
             };
-        }
     }
 }
