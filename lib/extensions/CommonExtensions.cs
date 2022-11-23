@@ -144,5 +144,16 @@ namespace advent_of_code_lib.extensions
             result %= 10;
             return result;
         }
+
+        public static int CountDigits(this int n)
+        {
+            int count = 0;
+            while (n != 0)
+            {
+                n /= 10;
+                ++count;
+            }
+            return count;
+        }
     }
 }

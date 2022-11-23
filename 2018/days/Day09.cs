@@ -36,10 +36,10 @@ namespace advent_of_code_2018.days
 
         internal class MarbleGame
         {
-            public HashSet<MarbleNode> Marbles { get; set; }
+            public HashSet<LinkedNode> Marbles { get; set; }
             public Dictionary<int, long> Players { get; } = new();
             public int Target { get; set; }
-            public MarbleNode CurrentNode { get; set; } // tracking CurrentNode as node obj instead of int was key to performance
+            public LinkedNode CurrentNode { get; set; } // tracking CurrentNode as node obj instead of int was key to performance
             public long Winningscore => Players.Max(x => x.Value);
 
             public long Play(int players)
@@ -50,12 +50,12 @@ namespace advent_of_code_2018.days
                 int currentPlayer = 0;
                 int currentMarble = 1;
 
-                CurrentNode = new MarbleNode { Value = 0 };
-                Marbles = new HashSet<MarbleNode>() { CurrentNode };
+                CurrentNode = new LinkedNode { Value = 0 };
+                Marbles = new HashSet<LinkedNode>() { CurrentNode };
 
                 while (true)
                 {
-                    Place(new MarbleNode() { Value = currentMarble }, currentPlayer);
+                    Place(new LinkedNode() { Value = currentMarble }, currentPlayer);
 
                     currentMarble++;
 
@@ -70,7 +70,7 @@ namespace advent_of_code_2018.days
                 return Players.Max(x => x.Value);
             }
 
-            public void Place(MarbleNode node, int player)
+            public void Place(LinkedNode node, int player)
             {
                 if (!Marbles.Any())
                 {
@@ -89,16 +89,16 @@ namespace advent_of_code_2018.days
                 PlaceNext(node, player);
             }
 
-            private void Place(MarbleNode node)
+            private void Place(LinkedNode node)
             {
                 CurrentNode = node; // tracking CurrentNode as node obj instead of int was key to performance
                 Marbles.Add(node);
             }
 
-            private MarbleNode GetScoreMarble(MarbleNode source, int steps = 9)
+            private LinkedNode GetScoreMarble(LinkedNode source, int steps = 9)
                 => steps == 0 ? source : GetScoreMarble(source.Previous, steps - 1);
 
-            private void PlaceNext(MarbleNode node, int player)
+            private void PlaceNext(LinkedNode node, int player)
             {
                 var target = CurrentNode.Next.Next;
                 if (node.Value % 23 == 0)
@@ -118,7 +118,7 @@ namespace advent_of_code_2018.days
                 Place(node);
             }
 
-            public void Remove(MarbleNode node)
+            public void Remove(LinkedNode node)
             {
                 node.Previous.ConnectForward(node.Next);
 
@@ -126,23 +126,23 @@ namespace advent_of_code_2018.days
             }
         }
 
-        public class MarbleNode
+        public class LinkedNode
         {
             public int Value { get; set; }
-            public MarbleNode Previous { get; set; } = null;
-            public MarbleNode Next { get; set; } = null;
+            public LinkedNode Previous { get; set; } = null;
+            public LinkedNode Next { get; set; } = null;
         }
     }
 
-    public static class Ext9
+    internal static class Ext9
     {
-        public static void ConnectForward(this Day09.MarbleNode node, Day09.MarbleNode next)
+        public static void ConnectForward(this Day09.LinkedNode node, Day09.LinkedNode next)
         {
             next.Previous = node;
             node.Next = next;
         }
 
-        public static void ConnectBack(this Day09.MarbleNode node, Day09.MarbleNode prevNode)
+        public static void ConnectBack(this Day09.LinkedNode node, Day09.LinkedNode prevNode)
         {
             prevNode.Next = node;
             node.Previous = prevNode;
