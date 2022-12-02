@@ -7,8 +7,13 @@ namespace advent_of_code_lib.bases
 {
     public abstract class SolverBase : ISolver
     {
-        private string[] GetIndata(string folder)
+        public string Folder { get; set; } = null!;
+
+        protected string[] GetAllLines(string folder)
             => File.ReadAllLines(Path.Combine(folder, $"{this.GetProblemInfo().Day}.in"));
+
+        protected string GetAllData(string folder)
+            => File.ReadAllText(Path.Combine(folder, $"{this.GetProblemInfo().Day}.in"));
 
         protected static Dictionary<int, ConsoleColor> BenchmarkColors => new()
         {
@@ -46,6 +51,7 @@ namespace advent_of_code_lib.bases
 
         public void Solve(string folder)
         {
+            Folder = folder;
             PrintSolutionHeader();
 
             if (this.IsSlow())
@@ -59,10 +65,10 @@ namespace advent_of_code_lib.bases
 
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            PrintSolutionPart(PartOne(GetIndata(folder)), stopWatch.ElapsedMilliseconds, 1);
+            PrintSolutionPart(PartOne(GetAllLines(folder)), stopWatch.ElapsedMilliseconds, 1);
 
             stopWatch.Restart();
-            PrintSolutionPart(PartTwo(GetIndata(folder)), stopWatch.ElapsedMilliseconds, 2);
+            PrintSolutionPart(PartTwo(GetAllLines(folder)), stopWatch.ElapsedMilliseconds, 2);
             stopWatch.Stop();
         }
 
