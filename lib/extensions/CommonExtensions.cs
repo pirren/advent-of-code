@@ -145,6 +145,11 @@ namespace advent_of_code_lib.extensions
             return result;
         }
 
+        /// <summary>
+        /// Count digits (positions) of integer
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
         public static int CountDigits(this int n)
         {
             int count = 0;

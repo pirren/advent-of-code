@@ -8,6 +8,8 @@ namespace advent_of_code_2018.days
     {
         public override object PartOne(string[] data)
         {
+            // Part 1: What is the checksum for your list of box IDs?
+            // 5976
             var letterCounts = GetBoxInformation(data).Select(x => x.count);
             int checksum = letterCounts.Count(x => x == 2) * letterCounts.Count(x => x == 3);
             return checksum;
@@ -15,6 +17,8 @@ namespace advent_of_code_2018.days
 
         public override object PartTwo(string[] data)
         {
+            // Part 1: What letters are common between the two correct box IDs?
+            // xretqmmonskvzupalfiwhcfdb
             var allBoxIds = GetBoxInformation(data).Select(x => x.boxId);
 
             foreach (var boxId in allBoxIds)
