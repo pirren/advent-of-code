@@ -10,7 +10,6 @@ namespace advent_of_code_2022.days
         {
             // Part 1: Find the Elf carrying the most Calories. How many total Calories is that Elf carrying?
             return GetAllData(Folder).Split("\r\n\r\n").Select(x => x.Split("\r\n").Select(int.Parse).Sum()).Max();
-            //return GetAllData(Folder).Split("\r\n\r\n").Select(x => x.Split("\r\n").Select(int.Parse).Sum()).Max();
         }
 
         public override object PartTwo(string[] data)
