@@ -1,5 +1,6 @@
 ﻿using advent_of_code_lib.attributes;
 using advent_of_code_lib.bases;
+using advent_of_code_lib.extensions;
 
 namespace advent_of_code_2022.days
 {
@@ -9,50 +10,43 @@ namespace advent_of_code_2022.days
         public override object PartOne(string[] _)
         {
             // Part 1: After the rearrangement procedure completes, what crate ends up on top of each stack?
-            return GetCargoProcedure().Move(CrateMover.Series9000).TopSupplies();
+            return GetCargoProcedure().RunProcedures(1).TopSupplies();
         }
 
         public override object PartTwo(string[] data)
         {
             // Part 2: Before the rearrangement process finishes, update your simulation so that the Elves know where they should stand to be ready to unload the final supplies.
             // After the rearrangement procedure completes, what crate ends up on top of each stack?
-            return GetCargoProcedure().Move(CrateMover.Series9001).TopSupplies();
+            return GetCargoProcedure().RunProcedures(2).TopSupplies();
         }
-
-        internal enum CrateMover
-        {
-            Series9000,
-            Series9001
-        };
 
         internal record Instruction(int Amount, int From, int To);
 
         internal class CargoProcedure
         {
             public List<Stack<char>> SupplyStacks { get; set; } = null!;
-            public List<Instruction> Instructures { get; set; } = null!;
+            public List<Instruction> Procedures { get; set; } = null!;
             public string TopSupplies() => string.Join("", SupplyStacks.Select(x => x.Peek()));
 
-            public CargoProcedure Move(CrateMover movertype)
+            public CargoProcedure RunProcedures(int part)
             {
-                foreach(var proc in Instructures) 
-                    RunProcedure(proc.From, proc.To, proc.Amount, movertype == CrateMover.Series9001);
+                if (part == 1)
+                    foreach (var proc in Procedures) Move(proc.From, proc.To, proc.Amount);
+                else if (part == 2)
+                    foreach (var proc in Procedures) MoveMany(proc.From, proc.To, proc.Amount);
+                else throw new Exception();
 
                 return this;
             }
-
-            private void RunProcedure(int from, int to, int amount = 1, bool movechunks = false)
+            private void MoveMany(int from, int to, int amount = 1)
             {
-                if(movechunks)
-                {
-                    Stack<char> q = new();
-                    for (int i = amount; i > 0; i--) q.Push(SupplyStacks[from - 1].Pop());
-                    while(q.Count > 0) SupplyStacks[to - 1].Push(q.Pop());
-                    return;
-                }
-
-                for (int i = amount; i > 0; i--) SupplyStacks[to - 1].Push(SupplyStacks[from - 1].Pop());
+                Stack<char> q = new();
+                for (int i = amount; i > 0; i--) q.Push(SupplyStacks[from - 1].Pop());
+                while (q.Count > 0) SupplyStacks[to - 1].Push(q.Pop());
             }
+
+            private void Move(int from, int to, int amount = 1) 
+                => Enumerable.Range(0, amount).Reverse().ForEach(_ => SupplyStacks[to - 1].Push(SupplyStacks[from - 1].Pop()));
         }
 
         CargoProcedure GetCargoProcedure()
@@ -65,7 +59,7 @@ namespace advent_of_code_2022.days
             var procedure = new CargoProcedure
             {
                 SupplyStacks = new List<Stack<char>>(),
-                Instructures = new() 
+                Procedures = new() 
             };
 
             for (var i = 0; i < cargoData[^1].Length; i++) procedure.SupplyStacks.Add(new Stack<char>());
@@ -80,7 +74,7 @@ namespace advent_of_code_2022.days
             for (int i = 0; i < instructionData.Length; i++)
             {
                 var insdata = instructionData[i].Split();
-                procedure.Instructures.Add(new Instruction(
+                procedure.Procedures.Add(new Instruction(
                         int.Parse(insdata[0]),
                         int.Parse(insdata[1]),
                         int.Parse(insdata[2])
