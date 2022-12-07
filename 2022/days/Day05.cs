@@ -13,14 +13,14 @@ namespace advent_of_code_2022.days
             return GetCargoProcedure().RunProcedures(1).TopSupplies();
         }
 
-        public override object PartTwo(string[] data)
+        public override object PartTwo(string[] _)
         {
             // Part 2: Before the rearrangement process finishes, update your simulation so that the Elves know where they should stand to be ready to unload the final supplies.
             // After the rearrangement procedure completes, what crate ends up on top of each stack?
             return GetCargoProcedure().RunProcedures(2).TopSupplies();
         }
 
-        internal record Instruction(int Amount, int From, int To);
+        internal record Instruction(int Amount, int From, int To) { }
 
         internal class CargoProcedure
         {
@@ -49,7 +49,7 @@ namespace advent_of_code_2022.days
                 => Enumerable.Range(0, amount).Reverse().ForEach(_ => SupplyStacks[to - 1].Push(SupplyStacks[from - 1].Pop()));
         }
 
-        CargoProcedure GetCargoProcedure()
+        private CargoProcedure GetCargoProcedure()
         {
             var data = GetAllData(Folder).Split("\r\n\r\n");
 
