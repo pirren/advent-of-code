@@ -1,5 +1,5 @@
 # Advent of Code
 
-Sammanställning av Advent of code pussel lösningar
+Sammanställning av lösningar på Advent of code pussel
 
 [Advent of code](https://adventofcode.com/)

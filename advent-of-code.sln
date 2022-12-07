@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "advent-of-code.lib", "lib\a
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "advent-of-code.2021", "2021\advent-of-code.2021.csproj", "{836B48C2-06EE-418D-81E2-F39267EA876E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "advent-of-code.tests", "advent-of-code.tests\advent-of-code.tests.csproj", "{E9391656-E767-4BFC-95D8-D1FD6D2D2714}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "advent-of-code.tests", "tests\advent-of-code.tests.csproj", "{E9391656-E767-4BFC-95D8-D1FD6D2D2714}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
