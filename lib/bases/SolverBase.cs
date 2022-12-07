@@ -9,10 +9,10 @@ namespace advent_of_code_lib.bases
     {
         public string Folder { get; set; } = null!;
 
-        protected string[] GetAllLines(string folder)
+        public string[] GetAllLines(string folder)
             => File.ReadAllLines(Path.Combine(folder, $"{this.GetProblemInfo().Day}.in"));
 
-        protected string GetAllData(string folder)
+        public string GetAllData(string folder)
             => File.ReadAllText(Path.Combine(folder, $"{this.GetProblemInfo().Day}.in"));
 
         protected static Dictionary<int, ConsoleColor> BenchmarkColors => new()
