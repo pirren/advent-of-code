@@ -146,6 +146,26 @@ namespace advent_of_code.tests
         }
         #endregion
 
+        #region Day08
+        [Fact]
+        public void Day08_1()
+        {
+            var day = Days[8];
+            var data = day.GetAllLines(indata);
+            var result = day!.PartOne(data);
+            Assert.True((int)result == 1835);
+        }
+
+        [Fact]
+        public void Day08_2()
+        {
+            var day = Days[8];
+            var data = day.GetAllLines(indata);
+            var result = day!.PartTwo(data);
+            Assert.True((int)result == 263670);
+        }
+        #endregion
+
         protected Dictionary<int, SolverBase> Days = new()
         {
             { 1, new Day01 { Folder = indata } },
@@ -154,7 +174,8 @@ namespace advent_of_code.tests
             { 4, new Day04 { Folder = indata } },
             { 5, new Day05 { Folder = indata } },
             { 6, new Day06 { Folder = indata } },
-            { 7, new Day07 { Folder = indata } }
+            { 7, new Day07 { Folder = indata } },
+            { 8, new Day08 { Folder = indata } }
         };
     }
 }

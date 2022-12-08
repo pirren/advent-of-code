@@ -10,8 +10,9 @@ namespace advent_of_code_2022.days
         {
             // Part 1: Find all of the directories with a total size of at most 100000.
             // What is the sum of the total sizes of those directories
-            var rootNode = HydrateNodeTree(new Node(), new (data.Skip(1)));
-            var folderSizes = FolderSizes(new(rootNode.FlattenNode())); // 
+            var rootNode = HydrateNodeTree(new Node(), new(data.Skip(1)));
+            var folderSizes = FolderSizes(new(rootNode.FlattenNode()));
+
             return folderSizes.Where(x => x <= 100000).Sum();
         }
 
@@ -19,9 +20,10 @@ namespace advent_of_code_2022.days
         {
             // Part 2: Find the smallest directory that, if deleted, would free up enough space on the filesystem to run the update.
             // What is the total size of that directory?
-            var rootNode = HydrateNodeTree(new Node(), new (data.Skip(1)));
-            var folderSizes = FolderSizes(new(rootNode.FlattenNode())).OrderBy(x => x);
-            return folderSizes.First(x => x >= folderSizes.Max() - 40000000);
+            var rootNode = HydrateNodeTree(new Node(), new(data.Skip(1)));
+            var folderSizes = FolderSizes(new(rootNode.FlattenNode()));
+
+            return folderSizes.OrderBy(x => x).First(x => x >= folderSizes.Max() - 40000000);
         }
 
         private IEnumerable<int> FolderSizes(Stack<Node> stack)
@@ -33,32 +35,32 @@ namespace advent_of_code_2022.days
             return FolderSizes(stack).Concat(new[] { folderSize });
         }
 
-        private Node HydrateNodeTree(Node currentNode, Queue<string> q)
+        private Node HydrateNodeTree(Node currentNode, Queue<string> cmds)
         {
-            if (!q.Any()) return currentNode;
+            if (!cmds.Any()) return currentNode;
 
-            if (q.Peek().EndsWith("ls")) q.Dequeue(); // skip the ls
-            currentNode.Size += GetFileSizes(q).Sum();
+            if (cmds.Peek().EndsWith("ls")) cmds.Dequeue(); // skip the ls
+            currentNode.Size += GetFileSizes(cmds).Sum();
 
-            if (!q.Any()) return currentNode;
+            if (!cmds.Any()) return currentNode;
 
-            var next = q.Dequeue().Split();
+            var next = cmds.Dequeue().Split();
             if (next[^1] == "..") return currentNode;
 
             if (next[1] == "cd")
             {
                 var childNode = new Node();
-                currentNode.SubNodes.Add(HydrateNodeTree(childNode, q));
+                currentNode.SubNodes.Add(HydrateNodeTree(childNode, cmds));
             }
 
-            return HydrateNodeTree(currentNode, q);
+            return HydrateNodeTree(currentNode, cmds);
         }
 
-        private IEnumerable<int> GetFileSizes(Queue<string> q)
+        private IEnumerable<int> GetFileSizes(Queue<string> cmds)
         {
-            while (q.Count > 0 && !q.Peek().StartsWith("$")) // take until next command
+            while (cmds.Any() && !cmds.Peek().StartsWith("$")) // take until next command
             {
-                var item = q.Dequeue();
+                var item = cmds.Dequeue();
                 if (item.StartsWith("dir")) continue; // we dont care about dir
                 yield return int.Parse(item.Split()[0]);
             }
