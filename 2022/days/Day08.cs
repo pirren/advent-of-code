@@ -11,26 +11,25 @@ namespace advent_of_code_2022.days
         {
             // Part 1: how many trees are visible from outside the grid?
             return VisibleTrees(Map(data));
-            //return VisibleTrees(GetMap(data), data[0].Length, data.Length);
         }
 
         public override object PartTwo(string[] data)
         {
             // Part 2: What is the highest scenic score possible for any tree?
             var map = Map(data);
-            return ScenicScores(map).Max();
+            return BestLocation(map);
         }
 
         private int VisibleTrees(int[][] map)
         {
             int visible = 0;
-            
+
             for (int i = 1; i < map.Length - 1; i++)
             {
                 for (int j = 1; j < map[0].Length - 1; j++)
                 {
                     var t = map[i][j];
-                    if (t == 0) 
+                    if (t == 0)
                         continue; // there can be no lower
 
                     if (0.Range(i).All(y => map[y][j] < t))
@@ -39,16 +38,16 @@ namespace advent_of_code_2022.days
                         visible++;
                     else if ((i + 1).Range(map.Length - 1 - i).All(y => map[y][j] < t))
                         visible++;
-                    else if((j + 1).Range(map[0].Length - 1 - j).All(x => map[i][x] < t))
+                    else if ((j + 1).Range(map[0].Length - 1 - j).All(x => map[i][x] < t))
                         visible++;
                 }
             }
             return visible + (map.Length * 2) + (map[1].Length * 2) - 4;
         }
 
-        private HashSet<int> ScenicScores(int[][] map)
+        private int BestLocation(int[][] map)
         {
-            HashSet<int> scores = new();
+            var best = 0;
             for (int i = 1; i < map.Length - 1; i++)
             {
                 for (int j = 1; j < map[0].Length - 1; j++)
@@ -56,33 +55,35 @@ namespace advent_of_code_2022.days
                     var t = map[i][j];
                     if (t == 0) continue; // there can be no lower
 
-                    int dy = 1, dx = 1, ddy = 1, ddx = 1;
+                    int north = 1, west = 1, south = 1, east = 1;
                     for (int y = i - 1; y > 0; y--)
                     {
                         if (map[y][j] >= t) break;
-                        dy++;
+                        north++;
                     }
                     for (int x = j - 1; x > 0; x--)
                     {
                         if (map[i][x] >= t) break;
-                        dx++;
+                        west++;
                     }
                     for (int y = i + 1; y < map.Length - 1; y++)
                     {
                         if (map[y][j] >= t) break;
-                        ddy++;
+                        south++;
                     }
                     for (int x = j + 1; x < map[0].Length - 1; x++)
                     {
                         if (map[i][x] >= t) break;
-                        ddx++;
+                        east++;
                     }
-                    scores.Add(dx * dy * ddx * ddy);
+                    var score = west * north * east * south;
+                    if (score > best) best = score;
                 }
             }
-            return scores;
+            return best;
         }
 
-        private int[][] Map(string[] indata) => indata.Select(x => x.Select(ch => (int)char.GetNumericValue(ch)).ToArray()).ToArray();
+        private int[][] Map(string[] indata) 
+            => indata.Select(x => x.Select(ch => (int)char.GetNumericValue(ch)).ToArray()).ToArray();
     }
 }
