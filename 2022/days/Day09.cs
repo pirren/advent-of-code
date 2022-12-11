@@ -11,14 +11,14 @@ namespace advent_of_code_2022.days
         public override object PartOne(string[] data)
         {
             // Part 1: How many positions does the tail of the rope visit at least once?
-            return TailPositions(data, 1).Count();
+            return TailPositions(data, 1).Count;
         }
 
         public override object PartTwo(string[] data)
         {
             // Part 2: Simulate your complete series of motions on a larger rope with ten knots.
             // How many positions does the tail of the rope visit at least once?
-            return TailPositions(data, 9).Count();
+            return TailPositions(data, 9).Count;
         }
 
         private HashSet<(int y, int x)> TailPositions(string[] data, int numtails)
@@ -53,7 +53,6 @@ namespace advent_of_code_2022.days
                     visited.Add(T[^1]);
                 }
             }
-
             return visited;
         }
     }

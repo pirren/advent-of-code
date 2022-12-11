@@ -146,6 +146,19 @@ namespace advent_of_code_lib.extensions
         }
 
         /// <summary>
+        /// Number at position n
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public static long NumberAt(this long value, int n)
+        {
+            var result = value / (int)Math.Pow(10, n);
+            result %= 10;
+            return result;
+        }
+
+        /// <summary>
         /// Count digits (positions) of integer
         /// </summary>
         /// <param name="n"></param>
@@ -159,6 +172,11 @@ namespace advent_of_code_lib.extensions
                 ++count;
             }
             return count;
+        }
+
+        public static int Multiply(this IEnumerable<int> items)
+        {
+            return items.Aggregate((a, b) => a * b);
         }
     }
 }

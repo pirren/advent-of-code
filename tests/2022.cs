@@ -9,6 +9,7 @@ namespace advent_of_code.tests
     public class UnitTest1
     {
         protected static string indata => nameof(indata);
+        protected static string sample => "sample-indata";
 
         #region Day01
         [Fact]
@@ -206,6 +207,45 @@ namespace advent_of_code.tests
         }
         #endregion
 
+        #region Day11
+        [Fact]
+        public void Day11_1()
+        {
+            var day = Days[11];
+            var result = day!.PartOne(Array.Empty<string>());
+            Assert.True((long)result == 57838);
+        }
+
+        [Fact]
+        public void Day11_2()
+        {
+            var day = Days[11];
+            var data = day.GetAllLines(indata);
+            var result = day!.PartTwo(Array.Empty<string>());
+            Assert.True((long)result == 15050382231);
+        }
+        #endregion
+
+        #region Day12
+        [Fact]
+        public void Day12_1()
+        {
+            var day = Days[12];
+            var data = day.GetAllLines(indata);
+            var result = day!.PartOne(data);
+            Assert.True((long)result == 0);
+        }
+
+        [Fact]
+        public void Day12_2()
+        {
+            var day = Days[12];
+            var data = day.GetAllLines(indata);
+            var result = day!.PartTwo(data);
+            Assert.True((int)result == 0);
+        }
+        #endregion
+
         protected Dictionary<int, SolverBase> Days = new()
         {
             { 1, new Day01 { Folder = indata } },
@@ -217,7 +257,9 @@ namespace advent_of_code.tests
             { 7, new Day07 { Folder = indata } },
             { 8, new Day08 { Folder = indata } },
             { 9, new Day09 { Folder = indata } },
-            { 10, new Day10 { Folder = indata } }
+            { 10, new Day10 { Folder = indata } },
+            { 11, new Day11 { Folder = indata } },
+            { 12, new Day12 { Folder = indata } }
         };
     }
 }
