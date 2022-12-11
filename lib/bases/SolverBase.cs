@@ -27,14 +27,13 @@ namespace advent_of_code_lib.bases
 
         private void PrintSolutionPart(object? result, long benchmarkTime, int part)
         {
-            using (ColorScope.CreateScope(ConsoleColor.Yellow))
-            {
-                Console.Write($"\r\n{(result?.ToString() ?? "")} \r\n");
-            };
-
             Console.Write($"Part {part}, solved in ");
             PrintTime(benchmarkTime);
-            Console.Write($" ms\r\n");
+            Console.Write($" ms\t: ");
+            using (ColorScope.CreateScope(ConsoleColor.Yellow))
+            {
+                Console.Write($"{(result?.ToString() ?? "")} \r\n");
+            };
         }
 
         public void PrintSolutionHeader()
@@ -46,7 +45,7 @@ namespace advent_of_code_lib.bases
             {
                 Console.Write($"Day {info.Day}: {info.ProblemName}");
             };
-            Console.Write("]\r\n");
+            Console.Write("]\r\n\r\n");
         }
 
         public void Solve(string folder)
