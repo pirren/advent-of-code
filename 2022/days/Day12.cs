@@ -18,16 +18,18 @@ namespace advent_of_code_2022.days
             // 1866 incorrect
             // 1772 ??
             // 1032 incorrect
+            // 564 incorrect
             // 558 incorrect
             // 556 incorrect
+
             var (graph, start, target) = GetGraph(data);
-            var map = new Map 
-            { 
-                Width = data[0].Length, 
-                Height = data.Length, 
-                Graph = graph, 
-                Start = start, 
-                Target = target 
+            var map = new Map
+            {
+                Width = data[0].Length,
+                Height = data.Length,
+                Graph = graph,
+                Start = start,
+                Target = target
             };
             return map.DistanceToEnd();
         }
@@ -39,57 +41,78 @@ namespace advent_of_code_2022.days
         }
 
 
-        internal record Node(int Y, int X)
+        public sealed record Node(int Y, int X, byte Level) : IComparable<Node>
         {
-            public bool Explored { get; set; } = false;
+            public (int y, int x) Point => (Y, X);
+            public override string ToString() => $"({X},{Y})";
+            public bool Equals(Node other) => X == other.X && Y == other.Y;
+
+            public int CompareTo(Node? other) => Level < other.Level ? -1 : Level == other.Level ? 0 : 1;
         }
 
         internal class Map
         {
             public int Width { get; set; }
             public int Height { get; set; }
-            public (int, int) Target { get; set; }
-            public (int, int) Start { get; set; }
+            public Node Target { get; set; }
+            public Node Start { get; set; }
 
-            public Dictionary<(int y, int x), byte> Graph { get; set; }
+            public List<Node> Graph { get; set; }
 
-            private bool InGrid((int y, int x) p) => p.x < Width && p.x >= 0 && p.y < Height && p.y >= 0;
+            private bool InGrid(Node n) => n.X < Width && n.X >= 0 && n.Y < Height && n.Y >= 0;
 
-            IEnumerable<(int y, int x)> Edges((int y, int x) p, int level)
-                => new List<(int y, int x)>
-                {
-                    (p.y - 1, p.x),
-                    (p.y + 1, p.x),
-                    (p.y, p.x - 1),
-                    (p.y, p.x + 1),
-                }.Where(InGrid).Where(x => Graph[x] >= level || level - 1 == Graph[x]);//.Where(x => Graph[p] < Graph[x] || Graph[p] == Graph[x] || Graph[p] - 1 == Graph[x]);
+            IEnumerable<Node> Edges(Node node)
+                => Graph.Where(n => 
+                (n.Y - 1 == node.Y && n.X == node.X)
+                || (n.Y + 1 == node.Y && n.X == node.X)
+                || (n.Y == node.Y && n.X - 1 == node.X)
+                || (n.Y == node.Y && n.X + 1 == node.X)
+                )
+                .Where(InGrid)
+                .Where(n => !n.Equals(node))
+                .Where(x => x.Level <= node.Level || node.Level + 1 == x.Level);
 
             public int DistanceToEnd()
             {
-                var visited = new HashSet<(int, int)> { Start };
-                var queue = new SortedSet<(int manhattan, int level, int y, int x, int steps)>()
+                var visited = new HashSet<(int, int)> { Start.Point };
+                var queue = new SortedSet<(Node n, int manhattan)>()
                 {
-                    { (Start.Manhattan(Target), 0, Start.Item1, Start.Item2, 0) }
+                    { (Start, Start.Point.Manhattan(Target.Point)) }
                 };
+
+                var came_from = new Dictionary<Node, List<Node>>()
+                {
+                    //{ (Start.Manhattan(Target), 0, Start.y, Start.x, 0), new() }
+                };
+
                 while (queue.Count > 0)
                 {
-                    var currentNode = queue.Last();
-                    queue.Remove(currentNode);
-                    var currentSpace = (currentNode.y, currentNode.x);
+                    var current = queue.First();
+                    queue.Remove(current);
+                    //var currentSpace = (currentNode.y, currentNode.x);
 
-                    var debug = Edges(currentSpace, currentNode.level).Where(x => !visited.Contains(x)).ToArray();
-                    foreach (var edge in Edges(currentSpace, currentNode.level).Where(x => !visited.Contains(x)))
+                    var debug = Edges(current.n).ToArray();
+                    foreach (var edge in Edges(current.n))//.Where(x => !visited.Contains(x)))
                     {
+                        if (came_from.ContainsKey(edge)) continue;
+
                         if (edge == Target)
                         {
                             Print(visited);
-                            return currentNode.steps + 1;
+                            return came_from[current.n].Count;
                         }
                         else
                         {
-                            visited.Add(edge);
-                            var next = (edge.Manhattan(Target), Graph[edge], edge.y, edge.x, currentNode.steps + 1);
-                            queue.Add(next);
+                            //visited.Add(edge);
+                            if(came_from.ContainsKey(edge))
+                            {
+                                came_from[edge].Add(current.n);
+                            }
+                            else
+                            {
+                                came_from.Add(edge, new() { current.n });
+                            }
+                            queue.Add((edge, edge.Point.Manhattan(Target.Point)));
                         }
                     }
                 }
@@ -116,33 +139,26 @@ namespace advent_of_code_2022.days
             }
         }
 
-        private (Dictionary<(int y, int x), byte>, (int, int) start, (int, int) target) GetGraph(string[] data)
+        private (List<Node> graph, Node start, Node target) GetGraph(string[] data)
         {
-            var graph = new Dictionary<(int y, int x), byte>();
+            var graph = new List<Node>();
 
-            (int, int) start = (0, 0);
-            (int, int) target = (0, 0);
+            Node start = null, target = null;
             byte elevation;
 
             foreach (var (row, i) in data.Select((row, idx) => (row, idx)))
             {
                 foreach (var (col, j) in row.Trim().Select((col, idx) => (col, idx)))
                 {
-                    switch (col)
+                    var node = col switch
                     {
-                        case 'S':
-                            start = (i, j);
-                            elevation = 0;
-                            break;
-                        case 'E':
-                            target = (i, j);
-                            elevation = 25;
-                            break;
-                        default:
-                            elevation = (byte)(col - 'a');
-                            break;
+                        'S' => new Node(i, j, 0),
+                        'E' => new Node(i, j, 25),
+                        _ => new Node(i, j, (byte)(col - 'a'))
                     };
-                    graph[(i, j)] = elevation;
+                    if (col == 'S') start = node;
+                    if (col == 'E') target = node;
+                    graph.Add(node);
                 }
             }
             return (graph, start, target);
