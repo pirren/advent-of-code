@@ -10,101 +10,107 @@ namespace advent_of_code_2022.days
 
         public override object PartOne(string[] data)
         {
-            // Part 1: What is the fewest steps required to move from your current position to the
-            // location that should get the best signal?
-
-            var (graph, start, target) = GetGraph(data);
+            // Part 1: What is the fewest steps required to move from your current position
+            // to the location that should get the best signal?
+            var graph = GetGraph(data);
             var map = new Map
             {
                 Width = data[0].Length,
                 Height = data.Length,
                 Graph = graph,
-                Start = start,
-                Target = target
+                StartCondition = x => x.Id == 'S',
+                TargetCondition = x => x.Id == 'E'
             };
-            return map.DistanceToEnd();
+            return map.DistanceToEnd(reverse: false);
         }
 
         public override object PartTwo(string[] data)
         {
-            // Part 2: 
-            return 0;
-        }
-
-
-        public class Node
-        {
-            public Node(int y, int x, byte level)
+            // Part 2: What is the fewest steps required to move starting from any square with
+            // elevation a to the location that should get the best signal?
+            var graph = GetGraph(data);
+            var map = new Map
             {
-                Y = y;
-                X = x;
-                Level = level;
-            }
-            public int Y { get; set; }
-            public int X { get; set; }
-            public byte Level { get; set; }
+                Width = data[0].Length,
+                Height = data.Length,
+                Graph = graph,
+                StartCondition = x => x.Id == 'E',
+                TargetCondition = x => x.Id == 'a' || x.Id == 'S'
+            };
+            return map.DistanceToEnd(reverse: true);
         }
+
+        public record Node(int Y, int X, byte Level, char Id) { }
 
         internal class Map
         {
             public int Width { get; set; }
             public int Height { get; set; }
-            public Node Target { get; set; }
-            public Node Start { get; set; }
-
+            public Func<Node, bool> TargetCondition { get; set; }
+            public Func<Node, bool> StartCondition { get; set; }
             public List<Node> Graph { get; set; }
 
             private bool InGrid(Node n) => n.X < Width && n.X >= 0 && n.Y < Height && n.Y >= 0;
 
-            IEnumerable<Node> Edges(Node node)
-                => Graph.Where(n => (n.Y - 1 == node.Y && n.X == node.X) || (n.Y + 1 == node.Y && n.X == node.X)
-                        || (n.Y == node.Y && n.X - 1 == node.X) || (n.Y == node.Y && n.X + 1 == node.X))
-                .Where(InGrid)
-                .Where(x => x.Level <= node.Level || node.Level + 1 == x.Level);
-
-            public int DistanceToEnd()
+            IEnumerable<Node> Edges(Node node, bool reverse)
             {
-                var frontier = new Queue<Node>(new[] { Start });
+                var edges = Graph.Where(n => (n.Y - 1 == node.Y && n.X == node.X) || (n.Y + 1 == node.Y && n.X == node.X)
+                        || (n.Y == node.Y && n.X - 1 == node.X) || (n.Y == node.Y && n.X + 1 == node.X))
+                .Where(InGrid);
 
-                var came_from = new Dictionary<Node, Node>
+                return reverse 
+                    ? edges.Where(x => x.Level >= node.Level || node.Level - 1 == x.Level)
+                    : edges.Where(x => x.Level <= node.Level || node.Level + 1 == x.Level);
+            }
+
+            public int DistanceToEnd(bool reverse)
+            {
+                var startNode = Graph.First(StartCondition);
+                var target = Graph.First(TargetCondition);
+
+                var frontier = new Queue<Node>(new[] { startNode });
+
+                var visited = new Dictionary<Node, Node>
                 {
-                    [Start] = null
+                    [startNode] = null
                 };
 
                 while (frontier.Count > 0)
                 {
                     var candidate = frontier.Dequeue();
-                    foreach(var edge in Edges(candidate))
+                    foreach(var edge in Edges(candidate, reverse))
                     {
-                        if (!came_from.ContainsKey(edge))
+                        if(candidate.Id == target.Id)
+                        {
+                            return CountBack(startNode, visited);
+                        }
+                        else if (!visited.ContainsKey(edge))
                         {
                             frontier.Enqueue(edge);
-                            came_from[edge] = candidate;
+                            visited[edge] = candidate;
                         }
                     }
                 }
+                throw new Exception();
+            }
 
-                var current = Target;
-                var path = new List<Node>();
-
-                while(current != Start)
+            private int CountBack(Node startNode, Dictionary<Node, Node> visited)
+            {
+                var current = visited.Select(x => x.Key).First(TargetCondition);
+                var steps = 0;
+                while (current != startNode)
                 {
-                    path.Add(current);
-                    current = came_from[current];
+                    current = visited[current];
+                    steps++;
                 }
 
-                return path.Count;
-                //path.Reverse();
-
-                //throw new Exception("No valid paths");
+                return steps;
             }
         }
 
-        private (List<Node> graph, Node start, Node target) GetGraph(string[] data)
+        private List<Node> GetGraph(string[] data)
         {
             var graph = new List<Node>();
-
-            Node start = null, target = null;
             byte elevation;
 
             foreach (var (row, i) in data.Select((row, idx) => (row, idx)))
@@ -113,16 +119,14 @@ namespace advent_of_code_2022.days
                 {
                     var node = col switch
                     {
-                        'S' => new Node(i, j, 0),
-                        'E' => new Node(i, j, 25),
-                        _ => new Node(i, j, (byte)(col - 'a'))
+                        'S' => new Node(i, j, 0, col),
+                        'E' => new Node(i, j, 25, col),
+                        _ => new Node(i, j, (byte)(col - 'a'), col)
                     };
-                    if (col == 'S') start = node;
-                    if (col == 'E') target = node;
                     graph.Add(node);
                 }
             }
-            return (graph, start, target);
+            return graph;
         }
     }
 }
