@@ -174,9 +174,29 @@ namespace advent_of_code_lib.extensions
             return count;
         }
 
+        /// <summary>
+        /// Mulitply numbers together
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
         public static int Multiply(this IEnumerable<int> items)
         {
             return items.Aggregate((a, b) => a * b);
+        }
+
+        /// <summary>
+        /// Create number out of Enumerable int
+        /// </summary>
+        /// <param name="numbers"></param>
+        /// <returns></returns>
+        public static int GetNumber(this IEnumerable<int> numbers)
+        {
+            int total = 0;
+            foreach (int entry in numbers)
+            {
+                total = 10 * total + entry;
+            }
+            return total;
         }
     }
 }

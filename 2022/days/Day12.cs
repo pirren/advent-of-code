@@ -12,15 +12,6 @@ namespace advent_of_code_2022.days
         {
             // Part 1: What is the fewest steps required to move from your current position to the
             // location that should get the best signal?
-            // 3934 too high
-            // 3700 too high
-            // 2355 ??
-            // 1866 incorrect
-            // 1772 ??
-            // 1032 incorrect
-            // 564 incorrect
-            // 558 incorrect
-            // 556 incorrect
 
             var (graph, start, target) = GetGraph(data);
             var map = new Map
@@ -41,13 +32,17 @@ namespace advent_of_code_2022.days
         }
 
 
-        public sealed record Node(int Y, int X, byte Level) : IComparable<Node>
+        public class Node
         {
-            public (int y, int x) Point => (Y, X);
-            public override string ToString() => $"({X},{Y})";
-            public bool Equals(Node other) => X == other.X && Y == other.Y;
-
-            public int CompareTo(Node? other) => Level < other.Level ? -1 : Level == other.Level ? 0 : 1;
+            public Node(int y, int x, byte level)
+            {
+                Y = y;
+                X = x;
+                Level = level;
+            }
+            public int Y { get; set; }
+            public int X { get; set; }
+            public byte Level { get; set; }
         }
 
         internal class Map
@@ -62,80 +57,46 @@ namespace advent_of_code_2022.days
             private bool InGrid(Node n) => n.X < Width && n.X >= 0 && n.Y < Height && n.Y >= 0;
 
             IEnumerable<Node> Edges(Node node)
-                => Graph.Where(n => 
-                (n.Y - 1 == node.Y && n.X == node.X)
-                || (n.Y + 1 == node.Y && n.X == node.X)
-                || (n.Y == node.Y && n.X - 1 == node.X)
-                || (n.Y == node.Y && n.X + 1 == node.X)
-                )
+                => Graph.Where(n => (n.Y - 1 == node.Y && n.X == node.X) || (n.Y + 1 == node.Y && n.X == node.X)
+                        || (n.Y == node.Y && n.X - 1 == node.X) || (n.Y == node.Y && n.X + 1 == node.X))
                 .Where(InGrid)
-                .Where(n => !n.Equals(node))
                 .Where(x => x.Level <= node.Level || node.Level + 1 == x.Level);
 
             public int DistanceToEnd()
             {
-                var visited = new HashSet<(int, int)> { Start.Point };
-                var queue = new SortedSet<(Node n, int manhattan)>()
+                var frontier = new Queue<Node>(new[] { Start });
+
+                var came_from = new Dictionary<Node, Node>
                 {
-                    { (Start, Start.Point.Manhattan(Target.Point)) }
+                    [Start] = null
                 };
 
-                var came_from = new Dictionary<Node, List<Node>>()
+                while (frontier.Count > 0)
                 {
-                    //{ (Start.Manhattan(Target), 0, Start.y, Start.x, 0), new() }
-                };
-
-                while (queue.Count > 0)
-                {
-                    var current = queue.First();
-                    queue.Remove(current);
-                    //var currentSpace = (currentNode.y, currentNode.x);
-
-                    var debug = Edges(current.n).ToArray();
-                    foreach (var edge in Edges(current.n))//.Where(x => !visited.Contains(x)))
+                    var candidate = frontier.Dequeue();
+                    foreach(var edge in Edges(candidate))
                     {
-                        if (came_from.ContainsKey(edge)) continue;
-
-                        if (edge == Target)
+                        if (!came_from.ContainsKey(edge))
                         {
-                            Print(visited);
-                            return came_from[current.n].Count;
-                        }
-                        else
-                        {
-                            //visited.Add(edge);
-                            if(came_from.ContainsKey(edge))
-                            {
-                                came_from[edge].Add(current.n);
-                            }
-                            else
-                            {
-                                came_from.Add(edge, new() { current.n });
-                            }
-                            queue.Add((edge, edge.Point.Manhattan(Target.Point)));
+                            frontier.Enqueue(edge);
+                            came_from[edge] = candidate;
                         }
                     }
                 }
-                throw new Exception("No valid paths");
-            }
 
-            void Print(HashSet<(int, int)> visited)
-            {
-                int count = 0;
-                for (var y = 0; y < Height; y++)
+                var current = Target;
+                var path = new List<Node>();
+
+                while(current != Start)
                 {
-                    for (var x = 0; x < Width; x++)
-                    {
-                        if (visited.Contains((y, x)))
-                        {
-                            Console.Write("#");
-                            count++;
-                        }
-                        else Console.Write(".");
-                    }
-                    Console.WriteLine();
+                    path.Add(current);
+                    current = came_from[current];
                 }
-                Console.WriteLine(count);
+
+                return path.Count;
+                //path.Reverse();
+
+                //throw new Exception("No valid paths");
             }
         }
 
