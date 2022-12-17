@@ -100,6 +100,21 @@ namespace advent_of_code_lib.extensions
         }
 
         /// <summary>
+        /// Get element at last position and remove it from list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static T PopLast<T>(this List<T> list)
+        {
+            var idx = list.Count - 1;
+            T r = list[idx];
+            list.RemoveAt(idx);
+            return r;
+        }
+
+        /// <summary>
         /// Invokes action on all T objects
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -189,7 +204,7 @@ namespace advent_of_code_lib.extensions
         /// </summary>
         /// <param name="numbers"></param>
         /// <returns></returns>
-        public static int GetNumber(this IEnumerable<int> numbers)
+        public static int MergeNumber(this IEnumerable<int> numbers)
         {
             int total = 0;
             foreach (int entry in numbers)
@@ -197,6 +212,19 @@ namespace advent_of_code_lib.extensions
                 total = 10 * total + entry;
             }
             return total;
+        }
+
+        public static Dictionary<(int y, int i), T> GetGraph<T>(this string[] data, T sign) 
+        {
+            var map = new Dictionary<(int y, int x), T>();
+            foreach (var (row, i) in data.Select((row, idx) => (row, idx)))
+            {
+                foreach (var (col, j) in data.Select((col, idx) => (col, idx)))
+                {
+                    map[(i, j)] = sign;
+                }
+            }
+            return map;
         }
     }
 }

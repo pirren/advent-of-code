@@ -85,7 +85,8 @@ namespace advent_of_code_lib.services
             {
                 solution.Solver.Solve(folder);
 
-                PrintUtils.PrintHr();
+                Console.WriteLine();
+                //PrintUtils.PrintHr();
             }
             Console.Write("\r\n");
 

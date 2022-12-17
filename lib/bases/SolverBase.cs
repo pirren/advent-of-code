@@ -29,7 +29,7 @@ namespace advent_of_code_lib.bases
         {
             Console.Write($"Part {part}, solved in ");
             PrintTime(benchmarkTime);
-            Console.Write($" ms\t: ");
+            Console.Write($" ms".PadRight(15 - benchmarkTime.ToString().Length) + ": ");
             using (ColorScope.CreateScope(ConsoleColor.Yellow))
             {
                 Console.Write($"{(result?.ToString() ?? "")} \r\n");

@@ -1,13 +1,11 @@
 ﻿using advent_of_code_lib.attributes;
 using advent_of_code_lib.bases;
-using advent_of_code_lib.extensions;
 
 namespace advent_of_code_2022.days
 {
     [ProblemInfo(12, "Hill Climbing Algorithm")]
     public class Day12 : SolverBase
     {
-
         public override object PartOne(string[] data)
         {
             // Part 1: What is the fewest steps required to move from your current position
@@ -66,25 +64,29 @@ namespace advent_of_code_2022.days
             public int DistanceToEnd(bool reverse)
             {
                 var startNode = Graph.First(StartCondition);
-                var target = Graph.First(TargetCondition);
+                var targetId = Graph.First(TargetCondition).Id;
 
-                var frontier = new Queue<Node>(new[] { startNode });
+                var frontier = new Queue<Node>(new [] {startNode});
+                frontier.Enqueue(startNode);
+                frontier.Enqueue(null); // use null to count steps
 
-                var visited = new Dictionary<Node, Node>
-                {
-                    [startNode] = null
-                };
+                var visited = new Dictionary<Node, Node> { [startNode] = null };
 
+                int stepsTaken = 0;
                 while (frontier.Count > 0)
                 {
                     var candidate = frontier.Dequeue();
-                    foreach(var edge in Edges(candidate, reverse))
+                    if (candidate == null)
                     {
-                        if(candidate.Id == target.Id)
-                        {
-                            return CountBack(startNode, visited);
-                        }
-                        else if (!visited.ContainsKey(edge))
+                        stepsTaken++;
+                        frontier.Enqueue(null!);
+                        if (frontier.Peek() == null) throw new Exception();
+                        continue;
+                    }
+                    foreach (var edge in Edges(candidate, reverse))
+                    {
+                        if(candidate.Id == targetId) return stepsTaken;
+                        if (!visited.ContainsKey(edge))
                         {
                             frontier.Enqueue(edge);
                             visited[edge] = candidate;
@@ -92,19 +94,6 @@ namespace advent_of_code_2022.days
                     }
                 }
                 throw new Exception();
-            }
-
-            private int CountBack(Node startNode, Dictionary<Node, Node> visited)
-            {
-                var current = visited.Select(x => x.Key).First(TargetCondition);
-                var steps = 0;
-                while (current != startNode)
-                {
-                    current = visited[current];
-                    steps++;
-                }
-
-                return steps;
             }
         }
 
